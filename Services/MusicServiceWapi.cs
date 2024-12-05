@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using Models;
 using Models.DTO;
@@ -121,11 +122,23 @@ public class MusicServiceWapi : IMusicService
     }
     public async Task<IMusicGroup> UpdateMusicGroupAsync(MusicGroupCUdto item)
     {
-        throw new NotImplementedException();
+        
+        return 
     }
     public async Task<IMusicGroup> CreateMusicGroupAsync(MusicGroupCUdto item)
     {
-        throw new NotImplementedException();
+        string url = $"MusicGroup/CreateItem"; 
+
+        
+        Console.WriteLine(item.ToString(), url);
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url, item);
+        response.EnsureSuccessStatusCode();
+
+        string ResponseObject = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<IMusicGroup>(ResponseObject, _jsonSettings);
+
+        return resp;
+
     }
     #endregion
 
