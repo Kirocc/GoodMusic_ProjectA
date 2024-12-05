@@ -82,10 +82,10 @@ public class MusicServiceWapi : IMusicService
     #region MusicGroup CRUD
     public async Task<RespPageDto<IMusicGroup>> ReadMusicGroupsAsync(bool seeded, bool flat, string filter, int pageNumber, int pageSize) 
     {
-        string uri = $"musicgroup/read?seeded={seeded}&flat={flat}&filter={filter}&pagenr={pageNumber}&pagesize={pageSize}";
+        string WebApiURL = $"musicgroup/read?seeded={seeded}&flat={flat}&filter={filter}&pagenr={pageNumber}&pagesize={pageSize}";
 
         //Send the HTTP Message and await the repsonse
-        HttpResponseMessage response = await _httpClient.GetAsync(uri);
+        HttpResponseMessage response = await _httpClient.GetAsync(WebApiURL);
 
         //Throw an exception if the response is not successful
         response.EnsureSuccessStatusCode();
@@ -97,8 +97,24 @@ public class MusicServiceWapi : IMusicService
     }
     public async Task<IMusicGroup> ReadMusicGroupAsync(Guid id, bool flat)
     {
-        throw new NotImplementedException();
+        string uri = $"musicgroup/Readitem?id={id}&flat={flat}";
+        
+        HttpResponseMessage response = await _httpClient.GetAsync(uri);
+
+        response.EnsureSuccessStatusCode();
+
+        string ResponseObject = await response.Content.ReadAsStringAsync();
+
+        var resp = JsonConvert.DeserializeObject<IMusicGroup>(ResponseObject, _jsonSettings);
+
+        return resp;
+      
+
+
+        
     }
+        
+    
     public async Task<IMusicGroup> DeleteMusicGroupAsync(Guid id)
     {
         throw new NotImplementedException();
