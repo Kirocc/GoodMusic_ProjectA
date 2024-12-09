@@ -101,7 +101,18 @@ public class MusicServiceWapi : IMusicService
     }
     public async Task<IMusicGroup> DeleteMusicGroupAsync(Guid id)
     {
-        throw new NotImplementedException();
+        string apiUrl = $"musicgroup/deleteItem?{id}";
+
+            var response = await _httpClient.DeleteMusicGroupAsync(id);
+            if (!response.IsSuccessStatusCode) 
+            { 
+                throw new Exception($"Failed to delete item {id} from the API. Status Code: {response.StatusCode}"); 
+            }
+
+        string ResponseObject = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<IMusicGroup>(ResponseObject, _jsonSettings);
+
+        return resp;
     }
     public async Task<IMusicGroup> UpdateMusicGroupAsync(MusicGroupCUdto item)
     {
@@ -109,7 +120,18 @@ public class MusicServiceWapi : IMusicService
     }
     public async Task<IMusicGroup> CreateMusicGroupAsync(MusicGroupCUdto item)
     {
-        throw new NotImplementedException();
+        string url = $"MusicGroup/CreateItem"; 
+
+
+        Console.WriteLine(item.ToString(), url);
+
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url, item);
+        response.EnsureSuccessStatusCode();
+
+        string ResponseObject = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<IMusicGroup>(ResponseObject, _jsonSettings);
+
+        return resp;
     }
     #endregion
 
