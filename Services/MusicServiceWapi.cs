@@ -83,10 +83,10 @@ public class MusicServiceWapi : IMusicService
     #region MusicGroup CRUD
     public async Task<RespPageDto<IMusicGroup>> ReadMusicGroupsAsync(bool seeded, bool flat, string filter, int pageNumber, int pageSize) 
     {
-        string WebApiURL = $"musicgroup/read?seeded={seeded}&flat={flat}&filter={filter}&pagenr={pageNumber}&pagesize={pageSize}";
+        string uri = $"musicgroup/read?seeded={seeded}&flat={flat}&filter={filter}&pagenr={pageNumber}&pagesize={pageSize}";
 
         //Send the HTTP Message and await the repsonse
-        HttpResponseMessage response = await _httpClient.GetAsync(WebApiURL);
+        HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
         //Throw an exception if the response is not successful
         response.EnsureSuccessStatusCode();
@@ -98,39 +98,34 @@ public class MusicServiceWapi : IMusicService
     }
     public async Task<IMusicGroup> ReadMusicGroupAsync(Guid id, bool flat)
     {
-        string uri = $"musicgroup/Readitem?id={id}&flat={flat}";
-        
-        HttpResponseMessage response = await _httpClient.GetAsync(uri);
+        throw new NotImplementedException();
+    }
+    public async Task<IMusicGroup> DeleteMusicGroupAsync(Guid id)
+    {
+        string apiUrl = $"musicgroup/deleteItem?{id}";
 
-        response.EnsureSuccessStatusCode();
+            var response = await _httpClient.GetAsync(apiUrl);
+            if (!response.IsSuccessStatusCode) 
+            { 
+                throw new Exception($"Failed to delete item {id} from the API. Status Code: {response.StatusCode}"); 
+            }
 
         string ResponseObject = await response.Content.ReadAsStringAsync();
-
         var resp = JsonConvert.DeserializeObject<IMusicGroup>(ResponseObject, _jsonSettings);
 
         return resp;
-      
-
-
-        
-    }
-        
-    
-    public async Task<IMusicGroup> DeleteMusicGroupAsync(Guid id)
-    {
-        throw new NotImplementedException();
     }
     public async Task<IMusicGroup> UpdateMusicGroupAsync(MusicGroupCUdto item)
     {
-        
-        return 
+        throw new NotImplementedException();
     }
     public async Task<IMusicGroup> CreateMusicGroupAsync(MusicGroupCUdto item)
     {
         string url = $"MusicGroup/CreateItem"; 
 
-        
+
         Console.WriteLine(item.ToString(), url);
+
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url, item);
         response.EnsureSuccessStatusCode();
 
@@ -138,7 +133,6 @@ public class MusicServiceWapi : IMusicService
         var resp = JsonConvert.DeserializeObject<IMusicGroup>(ResponseObject, _jsonSettings);
 
         return resp;
-
     }
     #endregion
 
