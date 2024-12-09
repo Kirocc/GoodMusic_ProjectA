@@ -102,18 +102,25 @@ public class MusicServiceWapi : IMusicService
     }
     public async Task<IMusicGroup> DeleteMusicGroupAsync(Guid id)
     {
-        string apiUrl = $"musicgroup/deleteItem?{id}";
+       var apiUrl = $"https://seido-webservice-307d89e1f16a.azurewebsites.net/api/MusicGroup/DeleteItem/%7Bid%7D";
 
-            var response = await _httpClient.GetAsync(apiUrl);
-            if (!response.IsSuccessStatusCode) 
-            { 
-                throw new Exception($"Failed to delete item {id} from the API. Status Code: {response.StatusCode}"); 
-            }
+    var response = await _httpClient.DeleteAsync(apiUrl);
 
-        string ResponseObject = await response.Content.ReadAsStringAsync();
-        var resp = JsonConvert.DeserializeObject<IMusicGroup>(ResponseObject, _jsonSettings);
+    if (!response.IsSuccessStatusCode)
+    {
+        var errorMessage = await response.Content.ReadAsStringAsync();
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new KeyNotFoundException($"Item with id {id} not found.");
+        }
+        throw new Exception($"Failed to delete item {id}. Status Code: {response.StatusCode}, Reason: {errorMessage}");
+    }
 
-        return resp;
+    // If the item was deleted successfully, return the response content
+    var responseContent = await response.Content.ReadAsStringAsync();
+    var deletedItem = JsonConvert.DeserializeObject<IMusicGroup>(responseContent, _jsonSettings);
+
+    return deletedItem;
     }
     public async Task<IMusicGroup> UpdateMusicGroupAsync(MusicGroupCUdto item)
     {
