@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using Models;
@@ -91,18 +92,27 @@ public class MusicServiceWapi : IMusicService
         //Throw an exception if the response is not successful
         response.EnsureSuccessStatusCode();
 
-        //Get the resonse data
+        //Get the response data
         string s = await response.Content.ReadAsStringAsync();
         var resp = JsonConvert.DeserializeObject<RespPageDto<IMusicGroup>>(s, _jsonSettings);
         return resp;
     }
     public async Task<IMusicGroup> ReadMusicGroupAsync(Guid id, bool flat)
     {
-        throw new NotImplementedException();
+        string uri = $"musicgroup/Readitem?id={id}&flat={flat}";
+        HttpResponseMessage response = await _httpClient.GetAsync(uri);
+
+        response.EnsureSuccessStatusCode();
+
+        string ResponseObject = await response.Content.ReadAsStringAsync();
+
+        var resp = JsonConvert.DeserializeObject<IMusicGroup>(ResponseObject, _jsonSettings);
+
+        return resp;
     }
     public async Task<IMusicGroup> DeleteMusicGroupAsync(Guid id)
     {
-       var apiUrl = $"https://seido-webservice-307d89e1f16a.azurewebsites.net/api/MusicGroup/DeleteItem/%7Bid%7D";
+       var apiUrl = $"https://seido-webservice-307d89e1f16a.azurewebsites.net/api/MusicGroup/DeleteItem/{id}";
 
     var response = await _httpClient.DeleteAsync(apiUrl);
 
